@@ -11,7 +11,7 @@
 require('connect.php');
 
 // Fetch all blog posts from the database
-$sql = "SELECT blog_id, title, content, time_stamp, USERID FROM blog";
+$sql = "SELECT blog_id, title, content, time_stamp, USERID FROM blog ORDER BY time_stamp DESC";
 $result = $db->query($sql);
 
 // Function to format dates
