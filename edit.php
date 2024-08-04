@@ -1,8 +1,8 @@
 <?php
- 
 require('connect.php');
 require('authenticate.php');
- 
+
+// Fetch the blog post for editing
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$id) {
@@ -10,7 +10,7 @@ if (!$id) {
     header('Location: index.php');
     exit();
 }
- 
+
 try {
     // Prepare and execute the SQL statement to fetch the blog post
     $stmt = $db->prepare("SELECT * FROM blog WHERE blog_id = :id");
@@ -19,10 +19,15 @@ try {
    
     // Fetch the blog post
     $post = $stmt->fetch();
+
+    if (!$post) {
+        // Redirect if the post was not found
+        header('Location: index.php');
+        exit();
+    }
 } catch (PDOException $e) {
-    echo "Database error: " . $e->getMessage();
+    echo "Database error: " . htmlspecialchars($e->getMessage());
 }
- 
 ?>
  
 <!DOCTYPE html>
@@ -49,14 +54,14 @@ try {
 <legend>Edit Blog Post</legend>
 <p>
 <label for="title">Title</label>
-<input name="title" id="title" value="<?php echo htmlspecialchars($post['title']); ?>" />
+<input name="title" id="title" value="<?php echo htmlspecialchars($post['title'], ENT_QUOTES, 'UTF-8'); ?>" minlength="1" required />
 </p>
 <p>
 <label for="content">Content</label>
-<textarea name="content" id="content"><?php echo htmlspecialchars($post['content']); ?></textarea>
+<textarea name="content" id="content" minlength="1" required><?php echo htmlspecialchars($post['content'], ENT_QUOTES, 'UTF-8'); ?></textarea>
 </p>
 <p>
-<input type="hidden" name="id" value="<?php echo $id; ?>" />
+<input type="hidden" name="id" value="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>" />
 <input type="submit" name="command" value="Update" />
 <input type="submit" name="command" value="Delete" onclick="return confirm('Are you sure you want to delete this post?');" />
 </p>
